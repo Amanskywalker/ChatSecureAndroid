@@ -48,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.viewpagerindicator.PageIndicator;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
@@ -204,12 +205,11 @@ public class AccountWizardActivity extends ThemeableActivity {
     {
         int i = 0;
         int accountProviders = 0;
-        List<String> listProviders = helper.getProviderNames();
-
+        
         mGoogleAccounts = AccountManager.get(this).getAccountsByType(GTalkOAuth2.TYPE_GOOGLE_ACCT);
 
         if (mGoogleAccounts.length > 0) {
-            accountProviders = listProviders.size() + 3; //potentialProviders + google + create account + burner
+            accountProviders = 5; //potentialProviders + google + create account + burner
 
             mAccountList = new String[accountProviders][3];
 
@@ -218,7 +218,7 @@ public class AccountWizardActivity extends ThemeableActivity {
             mAccountList[i][2] = GOOGLE_ACCOUNT;
             i++;
         } else {
-            accountProviders = listProviders.size() + 2; //potentialProviders + create account + burner
+            accountProviders = 4;//listProviders.size() + 2; //potentialProviders + create account + burner
 
             mAccountList = new String[accountProviders][3];
         }
@@ -308,7 +308,7 @@ public class AccountWizardActivity extends ThemeableActivity {
     public void showSetupAccountForm (String providerType, String username, String token, boolean createAccount, String formTitle, boolean hideTor)
     {
         long providerId = helper.createAdditionalProvider(providerType);//xmpp
-        mApp.resetProviderSettings(); //clear cached provider list
+    //    mApp.resetProviderSettings(); //clear cached provider list
 
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_INSERT);
@@ -383,26 +383,11 @@ public class AccountWizardActivity extends ThemeableActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == IntentIntegrator.REQUEST_CODE) {
-          boolean keyStoreImported = false;
-
-            try {
-
-                keyStoreImported = OtrAndroidKeyManagerImpl.handleKeyScanResult(requestCode, resultCode, data, this);
-
-            } catch (Exception e) {
-                OtrDebugLogger.log("error importing keystore",e);
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
+                    data);
+            if (scanResult != null) {
+                OtrAndroidKeyManagerImpl.handleKeyScanResult(scanResult.getContents(), this);
             }
-
-            if (keyStoreImported)
-            {
-                Toast.makeText(this, R.string.successfully_imported_otr_keyring, Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                Toast.makeText(this, R.string.otr_keyring_not_imported_please_check_the_file_exists_in_the_proper_format_and_location, Toast.LENGTH_SHORT).show();
-
-            }
-
         }
         else if (requestCode == REQUEST_CREATE_ACCOUNT)
         {

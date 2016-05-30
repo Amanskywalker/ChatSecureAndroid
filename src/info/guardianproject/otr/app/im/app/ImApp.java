@@ -102,8 +102,8 @@ public class ImApp extends Application {
     public static final String IMPS_CATEGORY = "info.guardianproject.otr.app.im.IMPS_CATEGORY";
     public static final String ACTION_QUIT = "info.guardianproject.otr.app.im.QUIT";
 
-    public static final int DEFAULT_AVATAR_WIDTH = 128;
-    public static final int DEFAULT_AVATAR_HEIGHT = 128;
+    public static final int DEFAULT_AVATAR_WIDTH = 64;
+    public static final int DEFAULT_AVATAR_HEIGHT = 64;
 
     public static final String HOCKEY_APP_ID = "2fa3b9252319e47367f1f125bb3adcd1";
 
@@ -118,8 +118,6 @@ public class ImApp extends Application {
     public static final String DEFAULT_XMPP_RESOURCE = "ChatSecure";
     public static final int DEFAULT_XMPP_PRIORITY = 20;
     public static final String DEFAULT_XMPP_OTR_MODE = "auto";
-
-    public static final String DEFAULT_GROUPCHAT_SERVER = "conference.dukgo.com";
 
     private Locale locale = null;
 
@@ -378,6 +376,7 @@ public class ImApp extends Application {
         if (!"".equals(lang) && !config.locale.getLanguage().equals(lang)) {
             locale = new Locale(lang);
             config.locale = locale;
+            Locale.setDefault(locale);
             getResources().updateConfiguration(config, getResources().getDisplayMetrics());
         }
 
@@ -397,6 +396,7 @@ public class ImApp extends Application {
             config.setLocale(locale);
         else
             config.locale = locale;
+        Locale.setDefault(locale);
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
 
         /* Set the preference after setting the locale in case something goes
@@ -580,9 +580,10 @@ public class ImApp extends Application {
     }
 
     /** Used to reset the provider settings if a reload is required. */
+    /*
     public void resetProviderSettings() {
         mProviders = null;
-    }
+    }*/
 
     // For testing
     public void setImProviderSettings(HashMap<Long, ProviderDef> providers) {
